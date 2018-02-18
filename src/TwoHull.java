@@ -1,0 +1,237 @@
+import Exceptions.ArrayLengthException;
+import NegPosLists.DoubleNPList;
+import Sum.I;
+import Vectors.MF;
+import Vectors.Vector;
+
+import java.util.Arrays;
+
+public class TwoHull {
+    private SingleHull neg;
+    private SingleHull pos;
+    private double ep;
+    private double nonSep;
+    private int numLoops;
+
+    public static final double epDef = 1e-2;
+    public static final double nonSepDef = 1e-5;
+    public static final double muDef = 1;
+
+    public TwoHull(double[] nums, int dim, double[] s, int[] whichClass) {
+        ep = epDef;
+        nonSep = nonSepDef;
+
+        Vector[] allVecs = parseVectors(nums, dim, s);
+        createHulls(allVecs, whichClass);
+    }
+
+    public TwoHull(double[] nums, int dim, int[] whichClass) {
+        this(nums, dim, defaultS(whichClass.length), whichClass);
+    }
+
+    public static double[] defaultS(int length) {
+        double[] toReturn = new double[length];
+        Arrays.fill(toReturn, 1.0);
+        return toReturn;
+    }
+
+    /**
+     * Parses an array of doubles into an array of vectors
+     * with dimension dim. Assigns each vector weight s[i]
+     *
+     * @param nums array of doubles
+     * @param dim dimension for each vector
+     * @param s array of weights for each vector
+     * @return array of parsed vectors
+     */
+    private Vector[] parseVectors(double[] nums, int dim, double[] s) {
+        int numVec = nums.length/dim;
+        Vector[] allVecs = new Vector[numVec];
+
+        int curVec;
+        int curNums = 0;
+        while (curNums < nums.length) {
+            curVec = Math.floorDiv(curNums, dim);
+            allVecs[curVec] = new Vector(dim);
+            for (int i=0; i<dim; i++) {
+                allVecs[curVec].set(i, nums[curNums]);
+                curNums++;
+            }
+            allVecs[curVec].setS(s[curVec]);
+        }
+        return allVecs;
+    }
+
+    /**
+     * Given an array of vectors and array of classes,
+     * places vectors in appropriate positive and
+     * negative arrays, and creates new SingleHull
+     * objects with these vectors.
+     *
+     * @param unorderedObs unordered array of vectors
+     * @param unorderedClass corresponding array of classes
+     */
+    private void createHulls(Vector[] unorderedObs, int[] unorderedClass) {
+        if (unorderedObs.length != unorderedClass.length) {
+            throw new ArrayLengthException();
+        }
+
+        int curNeg = 0;
+        int curPos = 0;
+
+        Vector[] negVec = new Vector[unorderedObs.length];
+        Vector[] posVec = new Vector[unorderedObs.length];
+
+        for (int i=0; i<unorderedObs.length; i++) {
+            if (unorderedClass[i] <0) {
+                negVec[curNeg] = unorderedObs[i];
+                negVec[curNeg].setWhichClass(-1);
+                curNeg++;
+            } else {
+                posVec[curPos] = unorderedObs[i];
+                posVec[curPos].setWhichClass(1);
+                curPos++;
+            }
+        }
+
+        negVec = Arrays.copyOf(negVec, curNeg);
+        posVec = Arrays.copyOf(posVec, curPos);
+
+        neg = new SingleHull(negVec, muDef);
+        pos = new SingleHull(posVec, muDef);
+    }
+
+    //<editor-fold desc="Getters/Setters">
+    public void setMu(int negMu, int posMu) {
+        neg.setMu(negMu);
+        pos.setMu(posMu);
+    }
+
+    public void setMu(int bothMu) {
+        setMu(bothMu, bothMu);
+    }
+
+    public void setEp(double ep) {
+        this.ep = ep;
+    }
+
+    public void setNonSep(double nonSep) {
+        this.nonSep = nonSep;
+    }
+
+    public SingleHull getNeg() {
+        return neg;
+    }
+
+    public SingleHull getPos() {
+        return pos;
+    }
+
+    private boolean b(int i) {
+        return i < neg.length();
+    }
+
+    public int dim() {
+        return pos.dim();
+    }
+
+    public Vector allGet(int i) {
+        return b(i) ? neg.get(i) : pos.get(i-neg.length());
+    }
+
+    public int allLength() {
+        return neg.length() + pos.length();
+    }
+
+    public int getWhichClass(int i) {
+        return b(i) ? -1 : 1;
+    }
+
+    public double allPWt(int i) {
+        return b(i) ? neg.PWt(i) : pos.PWt(i);
+    }
+
+    public void setAllPWt(int i, double value) {
+        if (b(i)) {
+            neg.setPWt(i, value);
+        } else {
+            pos.setPWt(i, value);
+        }
+    }
+
+    public double allVWt(int i) {
+        return b(i) ? neg.VWt(i) : pos.VWt(i);
+    }
+
+    public void setAllVWt(int i, double value) {
+        if (b(i)) {
+            neg.setVWt(i, value);
+        } else {
+            pos.setVWt(i, value);
+        }
+    }
+
+    public double allCache(int i) {
+        return b(i) ? neg.cache(i) : pos.cache(i);
+    }
+
+    public void setCache(int i, double value) {
+        if (b(i)) {
+            neg.setCache(i, value);
+        } else {
+            pos.setCache(i, value);
+        }
+    }
+    //</editor-fold>
+
+    private double kern(Vector a, Vector b) {
+        return Math.pow(a.mult(b), 2);
+    }
+
+    private void buildCache() {
+        double curSum = 0;
+        for (int i = 0; i< allLength(); i++) {
+            curSum = 0;
+            for (int k=0; k<allLength(); k++) {
+                curSum += allPWt(k) * getWhichClass(k) *
+                        kern(allGet(k), allGet(i));
+            }
+            setCache(i, curSum);
+        }
+    }
+
+    public void setupAlg() {
+        Vector centerPos = pos.getCenter();
+        Vector centerNeg = neg.getCenter();
+
+        pos.setPWt(pos.findVertex(centerNeg.subtract(centerPos), true));
+        neg.setPWt(neg.findVertex(centerPos.subtract(centerNeg), true));
+
+        numLoops = 0;
+    }
+
+    public void runAlg() {
+        setupAlg();
+        while (true) {
+            buildCache();
+
+            pos.setVWt(pos.findVertex(null, false));
+            neg.setVWt(neg.findVertex(null, false));
+
+            I fun1 = (int i) -> Math.max(getWhichClass(i),0) * allVWt(i) +
+                    Math.min(getWhichClass(i), 0) * allPWt(i) * allCache(i);
+            double w0vPos_pNeg = MF.summ(fun1, allLength());
+
+            I fun2 = (int i) -> Math.max(getWhichClass(i),0) * allPWt(i) +
+                    Math.min(getWhichClass(i), 0) * allVWt(i) * allCache(i);
+            double w0pPos_vNeg = MF.summ(fun2, allLength());
+
+            I fun3 = (int i) -> allPWt(i) * getWhichClass(i) * allCache(i);
+            double w0w = MF.summ(fun3, allLength());
+
+            if (w0pPos_vNeg > w0vPos_pNeg) {
+                if (1 - w0vPos_pNeg / w0w < ep) break;
+            }
+        }
+    }
+}
