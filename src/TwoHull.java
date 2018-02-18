@@ -1,6 +1,7 @@
 import Exceptions.ArrayLengthException;
 import NegPosLists.DoubleNPList;
 import Sum.I;
+import Sum.IJ;
 import Vectors.MF;
 import Vectors.Vector;
 
@@ -212,25 +213,63 @@ public class TwoHull {
 
     public void runAlg() {
         setupAlg();
+
+        //<editor-fold desc="Shared values">
+        I fun1 = (int i) -> Math.max(getWhichClass(i),0) * allVWt(i) +
+                Math.min(getWhichClass(i), 0) * allPWt(i) * allCache(i);
+
+        I fun2 = (int i) -> Math.max(getWhichClass(i),0) * allPWt(i) +
+                Math.min(getWhichClass(i), 0) * allVWt(i) * allCache(i);
+
+        I fun3 = (int i) -> allPWt(i) * getWhichClass(i) * allCache(i);
+        //</editor-fold>
+
+        //<editor-fold desc="Positive case">
+        I posNumer = (int i) -> (pos.PWt(i) - pos.VWt(i)) * pos.cache(i);
+
+        IJ posDenom = (int i, int j) -> (pos.PWt(i) - pos.VWt(i)) *
+                (pos.PWt(j) - pos.VWt(j)) * kern(pos.get(i), pos.get(j));
+        //</editor-fold>
+
+        //<editor-fold desc="Negative case">
+        I negNumer = (int i) -> (neg.PWt(i) - neg.VWt(i)) * neg.cache(i);
+
+        IJ negDenom = (int i, int j) -> (neg.PWt(i) - neg.VWt(i)) *
+                (neg.PWt(j) - neg.VWt(j)) * kern(neg.get(i), neg.get(j));
+        //</editor-fold>
+
         while (true) {
             buildCache();
 
             pos.setVWt(pos.findVertex(null, false));
             neg.setVWt(neg.findVertex(null, false));
 
-            I fun1 = (int i) -> Math.max(getWhichClass(i),0) * allVWt(i) +
-                    Math.min(getWhichClass(i), 0) * allPWt(i) * allCache(i);
             double w0vPos_pNeg = MF.summ(fun1, allLength());
-
-            I fun2 = (int i) -> Math.max(getWhichClass(i),0) * allPWt(i) +
-                    Math.min(getWhichClass(i), 0) * allVWt(i) * allCache(i);
             double w0pPos_vNeg = MF.summ(fun2, allLength());
-
-            I fun3 = (int i) -> allPWt(i) * getWhichClass(i) * allCache(i);
             double w0w = MF.summ(fun3, allLength());
 
             if (w0pPos_vNeg > w0vPos_pNeg) {
                 if (1 - w0vPos_pNeg / w0w < ep) break;
+
+                double numerator = MF.summ(posNumer, pos.length());
+                double denominator = MF.dSumm(posDenom, pos.length(), pos.length());
+
+                double q = MF.clamp(numerator / denominator, 0 ,1);
+
+                for (int i=0; i<pos.length(); i++) {
+                    pos.setPWt(i, (1-q) * pos.PWt(i) + q * pos.VWt(i));
+                }
+            } else {
+                if (1 - w0pPos_vNeg / w0w < ep) break;
+
+                double numerator = MF.summ(negNumer, neg.length());
+                double denominator = MF.dSumm(negDenom, neg.length(), neg.length());
+
+                double q = MF.clamp(-numerator / denominator, 0 ,1);
+
+                for (int i=0; i<pos.length(); i++) {
+                    neg.setPWt(i, (1-q) * neg.PWt(i) + q * neg.VWt(i));
+                }
             }
         }
     }
