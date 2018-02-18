@@ -3,6 +3,11 @@ package Vectors;
 import Exceptions.VectorSizeException;
 import Sum.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Scanner;
+
 public class MF {
 
     public static final double ep = 1e-10;
@@ -36,11 +41,11 @@ public class MF {
     }
 
     public static boolean geq(double a, double b) {
-        return(Math.abs(a-b) < ep || a > b);
+        return(a > b);
     }
 
     public static boolean leq(double a, double b) {
-        return(Math.abs(a-b) < ep || a < b);
+        return(a < b);
     }
 
     public static double min(double a, double b) {
@@ -92,4 +97,10 @@ public class MF {
         }
         return iSum;
     }
+
+//    public static double[] parseVec(String filename) throws FileNotFoundException {
+//        InputStream reader = new FileInputStream(filename);
+//        Scanner sc = new Scanner(reader);
+//
+//    }
 }

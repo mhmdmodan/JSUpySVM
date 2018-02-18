@@ -149,40 +149,45 @@ public class TwoHull {
     }
 
     public double allPWt(int i) {
-        return b(i) ? neg.PWt(i) : pos.PWt(i);
+        return b(i) ? neg.PWt(i) : pos.PWt(i-neg.length());
     }
 
     public void setAllPWt(int i, double value) {
         if (b(i)) {
             neg.setPWt(i, value);
         } else {
-            pos.setPWt(i, value);
+            pos.setPWt(i-neg.length(), value);
         }
     }
 
     public double allVWt(int i) {
-        return b(i) ? neg.VWt(i) : pos.VWt(i);
+        return b(i) ? neg.VWt(i) : pos.VWt(i-neg.length());
     }
 
     public void setAllVWt(int i, double value) {
         if (b(i)) {
             neg.setVWt(i, value);
         } else {
-            pos.setVWt(i, value);
+            pos.setVWt(i-neg.length(), value);
         }
     }
 
     public double allCache(int i) {
-        return b(i) ? neg.cache(i) : pos.cache(i);
+        return b(i) ? neg.cache(i) : pos.cache(i-neg.length());
     }
 
     public void setCache(int i, double value) {
         if (b(i)) {
             neg.setCache(i, value);
         } else {
-            pos.setCache(i, value);
+            pos.setCache(i-neg.length(), value);
         }
     }
+
+    public int getNumLoops() {
+        return numLoops;
+    }
+
     //</editor-fold>
 
     private double kern(Vector a, Vector b) {
@@ -201,7 +206,7 @@ public class TwoHull {
         }
     }
 
-    public void setupAlg() {
+    private void setupAlg() {
         Vector centerPos = pos.getCenter();
         Vector centerNeg = neg.getCenter();
 
@@ -215,11 +220,11 @@ public class TwoHull {
         setupAlg();
 
         //<editor-fold desc="Shared values">
-        I fun1 = (int i) -> Math.max(getWhichClass(i),0) * allVWt(i) +
-                Math.min(getWhichClass(i), 0) * allPWt(i) * allCache(i);
+        I fun1 = (int i) -> (Math.max(getWhichClass(i),0) * allVWt(i) +
+                Math.min(getWhichClass(i), 0) * allPWt(i)) * allCache(i);
 
-        I fun2 = (int i) -> Math.max(getWhichClass(i),0) * allPWt(i) +
-                Math.min(getWhichClass(i), 0) * allVWt(i) * allCache(i);
+        I fun2 = (int i) -> (Math.max(getWhichClass(i),0) * allPWt(i) +
+                Math.min(getWhichClass(i), 0) * allVWt(i)) * allCache(i);
 
         I fun3 = (int i) -> allPWt(i) * getWhichClass(i) * allCache(i);
         //</editor-fold>
@@ -237,8 +242,9 @@ public class TwoHull {
         IJ negDenom = (int i, int j) -> (neg.PWt(i) - neg.VWt(i)) *
                 (neg.PWt(j) - neg.VWt(j)) * kern(neg.get(i), neg.get(j));
         //</editor-fold>
-
+        numLoops = 0;
         while (true) {
+            numLoops++;
             buildCache();
 
             pos.setVWt(pos.findVertex(null, false));
@@ -267,7 +273,7 @@ public class TwoHull {
 
                 double q = MF.clamp(-numerator / denominator, 0 ,1);
 
-                for (int i=0; i<pos.length(); i++) {
+                for (int i=0; i<neg.length(); i++) {
                     neg.setPWt(i, (1-q) * neg.PWt(i) + q * neg.VWt(i));
                 }
             }

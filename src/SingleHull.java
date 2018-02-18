@@ -1,6 +1,13 @@
 import Vectors.*;
 import Sum.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Scanner;
+
 public class SingleHull {
     private Vector[] pointList;
     private double mu;
@@ -53,7 +60,7 @@ public class SingleHull {
 
     private int getMaxIndex(double[] a) {
         int maxInd = -1;
-        double maxVal = 0;
+        double maxVal = -1 * whichClass * cache[0];
         for (int i=0; i<length; i++) {
             if (a[i] == 0) {
                 double curVal = -1 * whichClass * cache[i];
@@ -136,9 +143,35 @@ public class SingleHull {
         this.mu = mu;
     }
 
-    public static void main(String[] args) {
-        double[] pts = new double[] {0,0,0,5,5,0,4,4,1,1};
-        TwoHull two = new TwoHull(pts,2,new int[] {1,1,1,1,-1});
-        System.out.println(two.getPos().findVertex(new Vector(new double[] {1,1}), true));
+    public void printPWt() {
+        System.out.println(Arrays.toString(PWt));
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        InputStream reader = new FileInputStream("data//poop.txt");
+        Scanner sc = new Scanner(reader);
+        double[] pts = new double[334];
+        int i = 0;
+        while (sc.hasNext()) {
+            pts[i] = sc.nextDouble();
+            i++;
+        }
+
+        reader = new FileInputStream("data//poopClass.txt");
+        sc = new Scanner(reader);
+        int[] classes = new int[167];
+        i = 0;
+        while (sc.hasNext()) {
+            classes[i] = sc.nextInt();
+            i++;
+        }
+
+        TwoHull test = new TwoHull(pts, 2, classes);
+
+        long before = System.currentTimeMillis();
+        test.runAlg();
+        long after = System.currentTimeMillis();
+
+        System.out.println(after-before);
     }
 }
