@@ -166,9 +166,8 @@ public class SingleHull {
             i++;
         }
 
-        TwoHull test = new TwoHull(pts, 2, classes);
-
         long before = System.currentTimeMillis();
+        TwoHull test = new TwoHull(pts, 2, classes);
         test.runAlg();
         long after = System.currentTimeMillis();
 
