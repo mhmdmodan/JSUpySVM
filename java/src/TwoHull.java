@@ -1,5 +1,4 @@
 import Exceptions.ArrayLengthException;
-import NegPosLists.DoubleNPList;
 import Sum.I;
 import Sum.IJ;
 import Vectors.MF;
@@ -278,5 +277,9 @@ public class TwoHull {
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+
     }
 }
