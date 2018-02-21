@@ -6,6 +6,7 @@ import Sum.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MF {
@@ -96,6 +97,43 @@ public class MF {
             iSum.addRep(jSum);
         }
         return iSum;
+    }
+
+    /**
+     * Parses an array of doubles into an array of vectors
+     * with dimension dim. Assigns each vector weight s[i]
+     *
+     * @param nums array of doubles
+     * @param dim dimension for each vector
+     * @param s array of weights for each vector
+     * @return array of parsed vectors
+     */
+    public static Vector[] parseVectors(double[] nums, int dim, double[] s) {
+        int numVec = nums.length/dim;
+        Vector[] allVecs = new Vector[numVec];
+
+        int curVec;
+        int curNums = 0;
+        while (curNums < nums.length) {
+            curVec = Math.floorDiv(curNums, dim);
+            allVecs[curVec] = new Vector(dim);
+            for (int i=0; i<dim; i++) {
+                allVecs[curVec].set(i, nums[curNums]);
+                curNums++;
+            }
+            allVecs[curVec].setS(s[curVec]);
+        }
+        return allVecs;
+    }
+
+    public static Vector[] parseVectors(double[] nums, int dim) {
+        return parseVectors(nums, dim, fillS(nums.length, dim));
+    }
+
+    private static double[] fillS(int length, int dim) {
+        double[] toReturn = new double[length/dim];
+        Arrays.fill(toReturn, 1.0);
+        return toReturn;
     }
 
 //    public static double[] parseVec(String filename) throws FileNotFoundException {

@@ -172,5 +172,6 @@ public class SingleHull {
         long after = System.currentTimeMillis();
 
         System.out.println(after-before);
+        System.out.println(test.getNumLoops());
     }
 }

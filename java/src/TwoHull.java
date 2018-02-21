@@ -6,6 +6,8 @@ import Vectors.Vector;
 
 import java.util.Arrays;
 
+import static Vectors.MF.parseVectors;
+
 public class TwoHull {
     private SingleHull neg;
     private SingleHull pos;
@@ -26,40 +28,11 @@ public class TwoHull {
     }
 
     public TwoHull(double[] nums, int dim, int[] whichClass) {
-        this(nums, dim, defaultS(whichClass.length), whichClass);
-    }
+        ep = epDef;
+        nonSep = nonSepDef;
 
-    public static double[] defaultS(int length) {
-        double[] toReturn = new double[length];
-        Arrays.fill(toReturn, 1.0);
-        return toReturn;
-    }
-
-    /**
-     * Parses an array of doubles into an array of vectors
-     * with dimension dim. Assigns each vector weight s[i]
-     *
-     * @param nums array of doubles
-     * @param dim dimension for each vector
-     * @param s array of weights for each vector
-     * @return array of parsed vectors
-     */
-    private Vector[] parseVectors(double[] nums, int dim, double[] s) {
-        int numVec = nums.length/dim;
-        Vector[] allVecs = new Vector[numVec];
-
-        int curVec;
-        int curNums = 0;
-        while (curNums < nums.length) {
-            curVec = Math.floorDiv(curNums, dim);
-            allVecs[curVec] = new Vector(dim);
-            for (int i=0; i<dim; i++) {
-                allVecs[curVec].set(i, nums[curNums]);
-                curNums++;
-            }
-            allVecs[curVec].setS(s[curVec]);
-        }
-        return allVecs;
+        Vector[] allVecs = parseVectors(nums, dim);
+        createHulls(allVecs, whichClass);
     }
 
     /**
@@ -135,7 +108,7 @@ public class TwoHull {
         return pos.dim();
     }
 
-    public Vector allGet(int i) {
+    private Vector allGet(int i) {
         return b(i) ? neg.get(i) : pos.get(i-neg.length());
     }
 
@@ -147,7 +120,7 @@ public class TwoHull {
         return b(i) ? -1 : 1;
     }
 
-    public double allPWt(int i) {
+    private double allPWt(int i) {
         return b(i) ? neg.PWt(i) : pos.PWt(i-neg.length());
     }
 
@@ -159,7 +132,7 @@ public class TwoHull {
         }
     }
 
-    public double allVWt(int i) {
+    private double allVWt(int i) {
         return b(i) ? neg.VWt(i) : pos.VWt(i-neg.length());
     }
 
@@ -171,11 +144,11 @@ public class TwoHull {
         }
     }
 
-    public double allCache(int i) {
+    private double allCache(int i) {
         return b(i) ? neg.cache(i) : pos.cache(i-neg.length());
     }
 
-    public void setCache(int i, double value) {
+    private void setCache(int i, double value) {
         if (b(i)) {
             neg.setCache(i, value);
         } else {

@@ -7,7 +7,7 @@
 #' @examples
 #' helloJavaWorld()
 helloJavaWorld <- function() {
-    hjw <- .jnew("HelloJavaWorld")
-    out <- .jcall(hjw, "S", "sayHello")
+    hjw <- .jnew("Test")
+    out <- .jcall(hjw, "[D", "giveDoub")
     return(out)
 }
