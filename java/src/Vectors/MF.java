@@ -57,6 +57,10 @@ public class MF {
         }
     }
 
+    public static double kern(Vector a, Vector b) {
+        return Math.pow(a.mult(b), 2);
+    }
+
     public static double summ(I op, int end) {
         double toReturn = 0;
         for (int i=0; i<end; i++) {

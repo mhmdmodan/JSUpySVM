@@ -6,6 +6,7 @@ import Vectors.Vector;
 
 import java.util.Arrays;
 
+import static Vectors.MF.kern;
 import static Vectors.MF.parseVectors;
 
 public class TwoHull {
@@ -108,7 +109,7 @@ public class TwoHull {
         return pos.dim();
     }
 
-    private Vector allGet(int i) {
+    public Vector allGet(int i) {
         return b(i) ? neg.get(i) : pos.get(i-neg.length());
     }
 
@@ -120,7 +121,7 @@ public class TwoHull {
         return b(i) ? -1 : 1;
     }
 
-    private double allPWt(int i) {
+    public double allPWt(int i) {
         return b(i) ? neg.PWt(i) : pos.PWt(i-neg.length());
     }
 
@@ -161,10 +162,6 @@ public class TwoHull {
     }
 
     //</editor-fold>
-
-    private double kern(Vector a, Vector b) {
-        return Math.pow(a.mult(b), 2);
-    }
 
     private void buildCache() {
         double curSum = 0;
