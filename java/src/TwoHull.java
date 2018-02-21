@@ -186,7 +186,7 @@ public class TwoHull {
         numLoops = 0;
     }
 
-    public void runAlg() {
+    public Predictor runAlgo() {
         setupAlg();
 
         //<editor-fold desc="Shared values">
@@ -252,6 +252,7 @@ public class TwoHull {
                 }
             }
         }
+        return new Predictor(this);
     }
 
     public static void main(String[] args) {

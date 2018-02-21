@@ -82,8 +82,9 @@ public class Predictor {
         return 0.5*dSumm(calcB, length, length);
     }
 
-    public int predictOne(Vector in) {
-        I wCalc = (int i) -> allPWt[i]*whichClass[i]*kern(allPts[i],in);
+    public int predict(double[] in) {
+        Vector inVec = new Vector(in);
+        I wCalc = (int i) -> allPWt[i]*whichClass[i]*kern(allPts[i],inVec);
         double wVal = summ(wCalc, length);
 
         return wVal - bisect > 0 ? 1 : -1;

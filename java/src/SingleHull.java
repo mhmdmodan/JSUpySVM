@@ -168,7 +168,7 @@ public class SingleHull {
 
         long before = System.currentTimeMillis();
         TwoHull test = new TwoHull(pts, 2, classes);
-        test.runAlg();
+        test.runAlgo();
         long after = System.currentTimeMillis();
 
         System.out.println(after-before);

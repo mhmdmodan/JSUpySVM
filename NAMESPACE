@@ -2,3 +2,4 @@
 
 import("rJava")
 export("helloJavaWorld")
+export("train")
