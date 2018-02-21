@@ -1,4 +1,5 @@
 import Exceptions.ArrayLengthException;
+import Exceptions.NonSepException;
 import Sum.I;
 import Sum.IJ;
 import Vectors.MF;
@@ -222,6 +223,10 @@ public class TwoHull {
             double w0vPos_pNeg = MF.summ(fun1, allLength());
             double w0pPos_vNeg = MF.summ(fun2, allLength());
             double w0w = MF.summ(fun3, allLength());
+
+            if (Math.sqrt(w0w) < nonSep) {
+                throw new NonSepException();
+            }
 
             if (w0pPos_vNeg > w0vPos_pNeg) {
                 if (1 - w0vPos_pNeg / w0w < ep) break;

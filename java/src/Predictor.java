@@ -1,4 +1,10 @@
+import Sum.I;
+import Sum.IJ;
 import Vectors.Vector;
+
+import static Vectors.MF.dSumm;
+import static Vectors.MF.kern;
+import static Vectors.MF.summ;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -11,13 +17,17 @@ public class Predictor {
     private int[] whichClass;
     private Vector[] allPts;
 
+    private int length;
     private double bisect;
 
     public Predictor(TwoHull parent) {
+        this.length = parent.allLength();
         this.parent = parent;
         this.allPWt = createPWt();
         this.whichClass = createClass();
         this.allPts = createAllPts();
+
+        this.bisect = calcBisect();
     }
 
     /**
@@ -26,9 +36,9 @@ public class Predictor {
      * @return array of point weights
      */
     private double[] createPWt() {
-        double[] allPWt = new double[parent.allLength()];
+        double[] allPWt = new double[length];
 
-        for (int i=0; i<parent.allLength(); i++) {
+        for (int i=0; i<length; i++) {
             allPWt[i] = parent.allPWt(i);
         }
 
@@ -41,9 +51,9 @@ public class Predictor {
      * @return array of which class
      */
     private int[] createClass() {
-        int[] whichClass = new int[parent.allLength()];
+        int[] whichClass = new int[length];
 
-        for (int i=0; i<parent.allLength(); i++) {
+        for (int i=0; i<length; i++) {
             whichClass[i] = parent.getWhichClass(i);
         }
 
@@ -57,12 +67,25 @@ public class Predictor {
      * @return array of vectors
      */
     private Vector[] createAllPts() {
-        Vector[] allPts = new Vector[parent.allLength()];
+        Vector[] allPts = new Vector[length];
 
-        for (int i=0; i<parent.allLength(); i++) {
+        for (int i=0; i<length; i++) {
             allPts[i] = parent.allGet(i);
         }
 
         return allPts;
+    }
+
+    private double calcBisect() {
+        IJ calcB = (int i, int j) -> allPWt[i] * whichClass[i] * allPWt[j] *
+                kern(allPts[i], allPts[j]);
+        return 0.5*dSumm(calcB, length, length);
+    }
+
+    public int predictOne(Vector in) {
+        I wCalc = (int i) -> allPWt[i]*whichClass[i]*kern(allPts[i],in);
+        double wVal = summ(wCalc, length);
+
+        return wVal - bisect > 0 ? 1 : -1;
     }
 }
