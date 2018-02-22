@@ -21,20 +21,29 @@ public class TwoHull {
     public static final double nonSepDef = 1e-5;
     public static final double muDef = 1;
 
-    public TwoHull(double[] nums, int dim, double[] s, int[] whichClass) {
+    public TwoHull(double[] nums,
+                   int dim,
+                   double[] s,
+                   int[] whichClass,
+                   String negLabel,
+                   String posLabel) {
         ep = epDef;
         nonSep = nonSepDef;
 
         Vector[] allVecs = parseVectors(nums, dim, s);
-        createHulls(allVecs, whichClass);
+        createHulls(allVecs, whichClass, negLabel, posLabel);
     }
 
-    public TwoHull(double[] nums, int dim, int[] whichClass) {
+    public TwoHull(double[] nums,
+                   int dim,
+                   int[] whichClass,
+                   String negLabel,
+                   String posLabel) {
         ep = epDef;
         nonSep = nonSepDef;
 
         Vector[] allVecs = parseVectors(nums, dim);
-        createHulls(allVecs, whichClass);
+        createHulls(allVecs, whichClass, negLabel, posLabel);
     }
 
     /**
@@ -46,7 +55,10 @@ public class TwoHull {
      * @param unorderedObs unordered array of vectors
      * @param unorderedClass corresponding array of classes
      */
-    private void createHulls(Vector[] unorderedObs, int[] unorderedClass) {
+    private void createHulls(Vector[] unorderedObs,
+                             int[] unorderedClass,
+                             String negLabel,
+                             String posLabel) {
         if (unorderedObs.length != unorderedClass.length) {
             throw new ArrayLengthException();
         }
@@ -72,8 +84,8 @@ public class TwoHull {
         negVec = Arrays.copyOf(negVec, curNeg);
         posVec = Arrays.copyOf(posVec, curPos);
 
-        neg = new SingleHull(negVec, muDef);
-        pos = new SingleHull(posVec, muDef);
+        neg = new SingleHull(negVec, muDef, negLabel);
+        pos = new SingleHull(posVec, muDef, posLabel);
     }
 
     //<editor-fold desc="Getters/Setters">

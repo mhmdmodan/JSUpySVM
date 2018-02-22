@@ -7,7 +7,6 @@ import static Vectors.MF.kern;
 import static Vectors.MF.summ;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class Predictor {
 
@@ -82,11 +81,11 @@ public class Predictor {
         return 0.5*dSumm(calcB, length, length);
     }
 
-    public int predict(double[] in) {
+    public String predict(double[] in) {
         Vector inVec = new Vector(in);
         I wCalc = (int i) -> allPWt[i]*whichClass[i]*kern(allPts[i],inVec);
         double wVal = summ(wCalc, length);
 
-        return wVal - bisect > 0 ? 1 : -1;
+        return wVal - bisect > 0 ? parent.getPos().getLabel() : parent.getNeg().getLabel();
     }
 }
