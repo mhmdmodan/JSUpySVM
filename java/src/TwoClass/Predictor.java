@@ -1,3 +1,5 @@
+package TwoClass;
+
 import Sum.I;
 import Sum.IJ;
 import Vectors.Vector;
@@ -5,8 +7,6 @@ import Vectors.Vector;
 import static Vectors.MF.dSumm;
 import static Vectors.MF.kern;
 import static Vectors.MF.summ;
-
-import java.util.Arrays;
 
 public class Predictor {
 
@@ -62,7 +62,7 @@ public class Predictor {
     /**
      * Creates a new array of vectors from parent
      * hulls. Shallow copy is okay here since
-     * vector array in SingleHull not mutable
+     * vector array in TwoClass.SingleHull not mutable
      * @return array of vectors
      */
     private Vector[] createAllPts() {

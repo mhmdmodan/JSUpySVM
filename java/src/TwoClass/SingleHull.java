@@ -1,10 +1,11 @@
+package TwoClass;
+
 import Vectors.*;
 import Sum.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Scanner;
 

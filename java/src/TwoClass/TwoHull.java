@@ -1,3 +1,5 @@
+package TwoClass;
+
 import Exceptions.ArrayLengthException;
 import Exceptions.NonSepException;
 import Sum.I;
@@ -21,35 +23,21 @@ public class TwoHull {
     public static final double nonSepDef = 1e-5;
     public static final double muDef = 1;
 
-    public TwoHull(double[] nums,
-                   int dim,
-                   double[] s,
-                   int[] whichClass,
+    public TwoHull(Vector[] negVec,
+                   Vector[] posVec,
                    String negLabel,
                    String posLabel) {
         ep = epDef;
         nonSep = nonSepDef;
 
-        Vector[] allVecs = parseVectors(nums, dim, s);
-        createHulls(allVecs, whichClass, negLabel, posLabel);
-    }
-
-    public TwoHull(double[] nums,
-                   int dim,
-                   int[] whichClass,
-                   String negLabel,
-                   String posLabel) {
-        ep = epDef;
-        nonSep = nonSepDef;
-
-        Vector[] allVecs = parseVectors(nums, dim);
-        createHulls(allVecs, whichClass, negLabel, posLabel);
+        neg = new SingleHull(negVec, muDef, negLabel);
+        pos = new SingleHull(posVec, muDef, posLabel);
     }
 
     /**
      * Given an array of vectors and array of classes,
      * places vectors in appropriate positive and
-     * negative arrays, and creates new SingleHull
+     * negative arrays, and creates new TwoClass.SingleHull
      * objects with these vectors.
      *
      * @param unorderedObs unordered array of vectors
