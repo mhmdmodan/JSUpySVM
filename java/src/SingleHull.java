@@ -175,11 +175,12 @@ public class SingleHull {
         }
 
         long before = System.currentTimeMillis();
-        TwoHull test = new TwoHull(pts, 2, classes, "This", "That");
-        test.runAlgo();
+        for (int j=0; j<2000; j++) {
+            TwoHull test = new TwoHull(pts, 2, classes, "This", "That");
+            test.runAlgo();
+        }
         long after = System.currentTimeMillis();
 
-        System.out.println(after-before);
-        System.out.println(test.getNumLoops());
+        System.out.println((after-before)/2000);
     }
 }
