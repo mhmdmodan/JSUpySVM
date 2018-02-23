@@ -2,6 +2,7 @@ package TwoClass;
 
 import Exceptions.ArrayLengthException;
 import Exceptions.NonSepException;
+import Holders.HyperParam;
 import Sum.I;
 import Sum.IJ;
 import Vectors.MF;
@@ -10,28 +11,23 @@ import Vectors.Vector;
 import java.util.Arrays;
 
 import static Vectors.MF.kern;
-import static Vectors.MF.parseVectors;
 
 public class TwoHull {
     private SingleHull neg;
     private SingleHull pos;
-    private double ep;
-    private double nonSep;
     private int numLoops;
 
-    public static final double epDef = 1e-2;
-    public static final double nonSepDef = 1e-5;
-    public static final double muDef = 1;
+    HyperParam params;
 
     public TwoHull(Vector[] negVec,
                    Vector[] posVec,
                    String negLabel,
-                   String posLabel) {
-        ep = epDef;
-        nonSep = nonSepDef;
+                   String posLabel,
+                   HyperParam params) {
+        this.params = params;
 
-        neg = new SingleHull(negVec, muDef, negLabel);
-        pos = new SingleHull(posVec, muDef, posLabel);
+        neg = new SingleHull(negVec, params.getMu(), negLabel, -1);
+        pos = new SingleHull(posVec, params.getMu(), posLabel, 1);
     }
 
     /**
@@ -60,11 +56,9 @@ public class TwoHull {
         for (int i=0; i<unorderedObs.length; i++) {
             if (unorderedClass[i] <0) {
                 negVec[curNeg] = unorderedObs[i];
-                negVec[curNeg].setWhichClass(-1);
                 curNeg++;
             } else {
                 posVec[curPos] = unorderedObs[i];
-                posVec[curPos].setWhichClass(1);
                 curPos++;
             }
         }
@@ -72,27 +66,11 @@ public class TwoHull {
         negVec = Arrays.copyOf(negVec, curNeg);
         posVec = Arrays.copyOf(posVec, curPos);
 
-        neg = new SingleHull(negVec, muDef, negLabel);
-        pos = new SingleHull(posVec, muDef, posLabel);
+        neg = new SingleHull(negVec, params.getMu(), negLabel,-1);
+        pos = new SingleHull(posVec, params.getMu(), posLabel,1);
     }
 
     //<editor-fold desc="Getters/Setters">
-    public void setMu(int negMu, int posMu) {
-        neg.setMu(negMu);
-        pos.setMu(posMu);
-    }
-
-    public void setMu(int bothMu) {
-        setMu(bothMu, bothMu);
-    }
-
-    public void setEp(double ep) {
-        this.ep = ep;
-    }
-
-    public void setNonSep(double nonSep) {
-        this.nonSep = nonSep;
-    }
 
     public SingleHull getNeg() {
         return neg;
@@ -224,12 +202,12 @@ public class TwoHull {
             double w0pPos_vNeg = MF.summ(fun2, allLength());
             double w0w = MF.summ(fun3, allLength());
 
-            if (Math.sqrt(w0w) < nonSep) {
+            if (Math.sqrt(w0w) < params.getNonSep()) {
                 throw new NonSepException();
             }
 
             if (w0pPos_vNeg > w0vPos_pNeg) {
-                if (1 - w0vPos_pNeg / w0w < ep) break;
+                if (1 - w0vPos_pNeg / w0w < params.getEp()) break;
 
                 double numerator = MF.summ(posNumer, pos.length());
                 double denominator = MF.dSumm(posDenom, pos.length(), pos.length());
@@ -240,7 +218,7 @@ public class TwoHull {
                     pos.setPWt(i, (1-q) * pos.PWt(i) + q * pos.VWt(i));
                 }
             } else {
-                if (1 - w0pPos_vNeg / w0w < ep) break;
+                if (1 - w0pPos_vNeg / w0w < params.getEp()) break;
 
                 double numerator = MF.summ(negNumer, neg.length());
                 double denominator = MF.dSumm(negDenom, neg.length(), neg.length());

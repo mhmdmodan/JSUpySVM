@@ -10,8 +10,6 @@ import static Vectors.MF.summ;
 
 public class Predictor {
 
-    private TwoHull parent;
-
     private double[] allPWt;
     private int[] whichClass;
     private Vector[] allPts;
@@ -19,12 +17,17 @@ public class Predictor {
     private int length;
     private double bisect;
 
+    private String negLabel;
+    private String posLabel;
+
     public Predictor(TwoHull parent) {
+        this.negLabel = parent.getNeg().getLabel();
+        this.posLabel = parent.getPos().getLabel();
+
         this.length = parent.allLength();
-        this.parent = parent;
-        this.allPWt = createPWt();
-        this.whichClass = createClass();
-        this.allPts = createAllPts();
+        this.allPWt = createPWt(parent);
+        this.whichClass = createClass(parent);
+        this.allPts = createAllPts(parent);
 
         this.bisect = calcBisect();
     }
@@ -34,7 +37,7 @@ public class Predictor {
      * hulls.
      * @return array of point weights
      */
-    private double[] createPWt() {
+    private double[] createPWt(TwoHull parent) {
         double[] allPWt = new double[length];
 
         for (int i=0; i<length; i++) {
@@ -46,10 +49,12 @@ public class Predictor {
 
     /**
      * Creates a new array of class ints from parent
-     * hulls.
+     * hulls. We are doing this rather than use internal
+     * Vector class because that can change with other
+     * SVMs between other classes
      * @return array of which class
      */
-    private int[] createClass() {
+    private int[] createClass(TwoHull parent) {
         int[] whichClass = new int[length];
 
         for (int i=0; i<length; i++) {
@@ -65,7 +70,7 @@ public class Predictor {
      * vector array in TwoClass.SingleHull not mutable
      * @return array of vectors
      */
-    private Vector[] createAllPts() {
+    private Vector[] createAllPts(TwoHull parent) {
         Vector[] allPts = new Vector[length];
 
         for (int i=0; i<length; i++) {
@@ -81,11 +86,10 @@ public class Predictor {
         return 0.5*dSumm(calcB, length, length);
     }
 
-    public String predict(double[] in) {
-        Vector inVec = new Vector(in);
+    public String predict(Vector inVec) {
         I wCalc = (int i) -> allPWt[i]*whichClass[i]*kern(allPts[i],inVec);
         double wVal = summ(wCalc, length);
 
-        return wVal - bisect > 0 ? parent.getPos().getLabel() : parent.getNeg().getLabel();
+        return wVal - bisect > 0 ? posLabel : negLabel;
     }
 }

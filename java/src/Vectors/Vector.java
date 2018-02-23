@@ -17,7 +17,6 @@ public class Vector {
     private double norm;
     private int[] minMax;
     private double s;
-    private int whichClass;
 
     public Vector(double[] vector) {
         this.vector = vector;
@@ -39,14 +38,6 @@ public class Vector {
 
     public double getS() {
         return s;
-    }
-
-    public int getWhichClass() {
-        return whichClass;
-    }
-
-    public void setWhichClass(int whichClass) {
-        this.whichClass = whichClass;
     }
 
     /**

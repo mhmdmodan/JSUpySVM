@@ -22,13 +22,13 @@ public class SingleHull {
 
     private String label;
 
-    public SingleHull(Vector[] pointList, double mu, String label) {
+    public SingleHull(Vector[] pointList, double mu, String label, int whichClass) {
         this.label = label;
         this.mu = mu;
         this.pointList = pointList;
         this.length = pointList.length;
         this.dim = pointList[0].dim();
-        this.whichClass = pointList[0].getWhichClass();
+        this.whichClass = whichClass;
 
         this.cache = new double[length];
         this.PWt = new double[length];
@@ -154,34 +154,5 @@ public class SingleHull {
 
     public String getLabel() {
         return label;
-    }
-
-    public static void main(String[] args) throws FileNotFoundException {
-        InputStream reader = new FileInputStream("data//poop.txt");
-        Scanner sc = new Scanner(reader);
-        double[] pts = new double[334];
-        int i = 0;
-        while (sc.hasNext()) {
-            pts[i] = sc.nextDouble();
-            i++;
-        }
-
-        reader = new FileInputStream("data//poopClass.txt");
-        sc = new Scanner(reader);
-        int[] classes = new int[167];
-        i = 0;
-        while (sc.hasNext()) {
-            classes[i] = sc.nextInt();
-            i++;
-        }
-
-        long before = System.currentTimeMillis();
-        for (int j=0; j<2000; j++) {
-            TwoHull test = new TwoHull(pts, 2, classes, "This", "That");
-            test.runAlgo();
-        }
-        long after = System.currentTimeMillis();
-
-        System.out.println((after-before)/2000);
     }
 }
