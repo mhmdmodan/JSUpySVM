@@ -2,12 +2,14 @@ import Holders.ClassPair;
 import Holders.HyperParam;
 import TwoClass.Predictor;
 import TwoClass.TwoHull;
+import Vectors.MF;
 import Vectors.Vector;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WSVM {
 
@@ -18,8 +20,8 @@ public class WSVM {
 
     public WSVM(double[] nums, int dim, String[] labels, double[] s) {
         params = new HyperParam();
-        vectorsMap = new HashMap<>();
-        predictorMap = new HashMap<>();
+        vectorsMap = new ConcurrentHashMap<>();
+        predictorMap = new ConcurrentHashMap<>();
 
         for (String str:labels) {
             vectorsMap.putIfAbsent(str, new LinkedList<Vector>());
@@ -50,26 +52,20 @@ public class WSVM {
 
     public MasterPredictor train() {
         findMu();
-        Set<String> labels = vectorsMap.keySet();
-        for (String str1:labels) {
-            for (String str2:labels) {
-                if (!str1.equals(str2)) {
-                    trainPair(str1, str2);
-                }
-            }
-        }
+        Set<ClassPair> pairs = MF.pairUp(vectorsMap.keySet());
+        pairs
+                .parallelStream()
+                .forEach(this::trainPair);
         return new MasterPredictor(predictorMap);
     }
 
-    private void trainPair(String classA, String classB) {
-        ClassPair pair = new ClassPair(classA, classB);
-
+    private void trainPair(ClassPair pair) {
         if (!predictorMap.containsKey(pair)) {
-            List<Vector> aVec = vectorsMap.get(classA);
-            List<Vector> bVec = vectorsMap.get(classB);
+            List<Vector> aVec = vectorsMap.get(pair.getX());
+            List<Vector> bVec = vectorsMap.get(pair.getY());
 
             TwoHull curTwoHull = new TwoHull(aVec.toArray(new Vector[0]),
-                    bVec.toArray(new Vector[0]), classA, classB, params);
+                    bVec.toArray(new Vector[0]), pair.getX(), pair.getY(), params);
             Predictor curPred = curTwoHull.runAlgo();
             predictorMap.put(pair, curPred);
         }

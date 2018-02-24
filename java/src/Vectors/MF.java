@@ -1,13 +1,16 @@
 package Vectors;
 
 import Exceptions.VectorSizeException;
+import Holders.ClassPair;
 import Sum.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class MF {
 
@@ -145,4 +148,16 @@ public class MF {
 //        Scanner sc = new Scanner(reader);
 //
 //    }
+
+    public static Set<ClassPair> pairUp(Set<String> labels) {
+        Set<ClassPair> set = new HashSet<>();
+        for (String str1:labels) {
+            for (String str2:labels) {
+                if (!str1.equals(str2)) {
+                    set.add(new ClassPair(str1, str2));
+                }
+            }
+        }
+        return set;
+    }
 }
