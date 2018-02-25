@@ -64,8 +64,8 @@ public class WSVM {
             List<Vector> aVec = vectorsMap.get(pair.getX());
             List<Vector> bVec = vectorsMap.get(pair.getY());
 
-            TwoHull curTwoHull = new TwoHull(aVec.toArray(new Vector[0]),
-                    bVec.toArray(new Vector[0]), pair.getX(), pair.getY(), params);
+            TwoHull curTwoHull = new TwoHull(aVec.toArray(new Vector[aVec.size()]),
+                    bVec.toArray(new Vector[bVec.size()]), pair.getX(), pair.getY(), params);
             Predictor curPred = curTwoHull.runAlgo();
             predictorMap.put(pair, curPred);
         }
