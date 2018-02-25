@@ -38,7 +38,7 @@ public class MF {
     }
 
     public static boolean geq(double a, double b) {
-        return(a > b);
+        return(a > b || eq(a,b));
     }
 
     public static boolean leq(double a, double b) {
@@ -99,8 +99,8 @@ public class MF {
         return iSum;
     }
 
-    private static double[] fillS(int length, int dim) {
-        double[] toReturn = new double[length/dim];
+    public static double[] fillS(int length) {
+        double[] toReturn = new double[length];
         Arrays.fill(toReturn, 1.0);
         return toReturn;
     }

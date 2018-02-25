@@ -2,11 +2,13 @@ import Holders.ClassPair;
 import Holders.HyperParam;
 import TwoClass.Predictor;
 import TwoClass.TwoHull;
+import Vectors.MF;
 import Vectors.Vector;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,6 +20,7 @@ public class WSVM {
     private HyperParam params;
 
     public WSVM(double[] nums, int dim, String[] labels, double[] s) {
+
         params = new HyperParam();
         vectorsMap = new ConcurrentHashMap<>();
         predictorMap = new ConcurrentHashMap<>();
@@ -26,6 +29,10 @@ public class WSVM {
             vectorsMap.putIfAbsent(str, new LinkedList<Vector>());
         }
         parseVectors(nums, dim, labels, s);
+    }
+
+    public WSVM(double[] nums, int dim, String[] labels) {
+        this(nums, dim, labels, MF.fillS(labels.length));
     }
 
     public HyperParam getParams() {
@@ -50,11 +57,15 @@ public class WSVM {
     }
 
     public MasterPredictor train() {
-        findMu();
-        Set<ClassPair> pairs = ClassPair.pairUp(vectorsMap.keySet());
-        pairs
-                .parallelStream()
-                .forEach(this::trainPair);
+        try {
+            findMu();
+            Set<ClassPair> pairs = ClassPair.pairUp(vectorsMap.keySet());
+            pairs
+                    .parallelStream()
+                    .forEach(this::trainPair);
+        } catch (Exception ex) {
+            ex.printStackTrace(new PrintStream(System.out));
+        }
         return new MasterPredictor(predictorMap);
     }
 
@@ -109,21 +120,13 @@ public class WSVM {
             i++;
         }
 
-        double[] s = new double[167];
-        Arrays.fill(s, 1);
-        WSVM test = new WSVM(pts, 2, classes, s);
+        long before = System.currentTimeMillis();
+        WSVM test = new WSVM(pts, 2, classes);
         test.getParams().setMu(1);
         MasterPredictor testPred = test.train();
+        long after = System.currentTimeMillis();
+        System.out.println((after-before));
         String result = testPred.predict(new double[] {0.05143501,-0.04338526});
         System.out.println(result);
-
-//        long before = System.currentTimeMillis();
-//        for (int j=0; j<2000; j++) {
-////            TwoHull test = new TwoHull(pts, 2, classes, "This", "That");
-////            test.runAlgo();
-//        }
-//        long after = System.currentTimeMillis();
-//
-//        System.out.println((after-before)/2000);
     }
 }

@@ -13,12 +13,18 @@ helloJavaWorld <- function() {
 }
 
 train <- function(df) {
-    whichClass <- as.integer(df[[1]])
+    whichClass <- as.character(df[[1]])
+
+    # Get dimension
     dim <- as.integer(length(df) - 1)
+
+    # Shuffle the values
     nums <- c(do.call(rbind, df[, -1]))
 
-    twoHull <- J("TwoHull")
-    svm <- new(twoHull, nums, dim, whichClass)
-    predictor <- .jcall(svm, "LPredictor;", "runAlgo")
+    wsvm <- J("WSVM")
+    svm <- new(wsvm, nums, dim, whichClass)
+    params <- .jcall(svm, "LHolders/HyperParam;", "getParams")
+    .jcall(params, "V", "setMu", as.double(1))
+    predictor <- .jcall(svm, "LMasterPredictor;", "train")
     return(predictor)
 }

@@ -3,12 +3,6 @@ package TwoClass;
 import Vectors.*;
 import Sum.*;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Scanner;
-
 public class SingleHull {
     private Vector[] pointList;
     private double mu;
@@ -50,9 +44,9 @@ public class SingleHull {
 
     private int getMaxIndex(Vector n, double[] a) {
         int maxInd = -1;
-        double maxVal = 0;
+        double maxVal = -Double.MAX_VALUE;
         for (int i=0; i<length; i++) {
-            if (a[i] == 0) {
+            if (MF.eq(a[i], 0)) {
                 double curVal = n.mult(get(i));
                 if (MF.geq(curVal, maxVal)) {
                     maxInd = i;
@@ -65,9 +59,9 @@ public class SingleHull {
 
     private int getMaxIndex(double[] a) {
         int maxInd = -1;
-        double maxVal = -1 * whichClass * cache[0];
+        double maxVal = -Double.MAX_VALUE;
         for (int i=0; i<length; i++) {
-            if (a[i] == 0) {
+            if (MF.eq(a[i], 0)) {
                 double curVal = -1 * whichClass * cache[i];
                 if (MF.geq(curVal, maxVal)) {
                     maxInd = i;
@@ -82,7 +76,6 @@ public class SingleHull {
         double[] a = new double[length];
         double total = 0;
         int i = 0;
-
         while (!MF.eq(total, 1)) {
             if (init) {
                 //for initialization
@@ -90,6 +83,7 @@ public class SingleHull {
             } else {
                 i = getMaxIndex(a);
             }
+
             a[i] = Double.min(get(i).getS()*mu, 1-total);
             total += a[i];
         }
@@ -142,14 +136,6 @@ public class SingleHull {
 
     public void setCache(int i, double value) {
         this.cache[i] = value;
-    }
-
-    public void setMu(double mu) {
-        this.mu = mu;
-    }
-
-    public void printPWt() {
-        System.out.println(Arrays.toString(PWt));
     }
 
     public String getLabel() {
