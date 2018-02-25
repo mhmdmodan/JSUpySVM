@@ -1,5 +1,8 @@
 package Holders;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ClassPair {
 
     private String x;
@@ -8,6 +11,18 @@ public class ClassPair {
     public ClassPair(String x, String y) {
         this.x = x;
         this.y = y;
+    }
+
+    public static Set<ClassPair> pairUp(Set<String> labels) {
+        Set<ClassPair> set = new HashSet<>();
+        for (String str1:labels) {
+            for (String str2:labels) {
+                if (!str1.equals(str2)) {
+                    set.add(new ClassPair(str1, str2));
+                }
+            }
+        }
+        return set;
     }
 
     public String getX() {

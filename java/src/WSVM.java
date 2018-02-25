@@ -2,7 +2,6 @@ import Holders.ClassPair;
 import Holders.HyperParam;
 import TwoClass.Predictor;
 import TwoClass.TwoHull;
-import Vectors.MF;
 import Vectors.Vector;
 
 import java.io.FileInputStream;
@@ -52,7 +51,7 @@ public class WSVM {
 
     public MasterPredictor train() {
         findMu();
-        Set<ClassPair> pairs = MF.pairUp(vectorsMap.keySet());
+        Set<ClassPair> pairs = ClassPair.pairUp(vectorsMap.keySet());
         pairs
                 .parallelStream()
                 .forEach(this::trainPair);

@@ -1,6 +1,5 @@
 import Holders.ClassPair;
 import TwoClass.Predictor;
-import Vectors.MF;
 import Vectors.Vector;
 
 import java.util.*;
@@ -41,7 +40,7 @@ public class MasterPredictor {
             }
 
             currentPredictions.clear();
-            Set<ClassPair> pairs = MF.pairUp(winners);
+            Set<ClassPair> pairs = ClassPair.pairUp(winners);
             for (ClassPair pair:pairs) {
                 currentPredictions.put(pair, predictionMap.get(pair));
             }
@@ -58,15 +57,6 @@ public class MasterPredictor {
                 .map(Map.Entry::getValue)
                 .collect(Collectors.groupingBy(Function.identity(),
                         Collectors.counting()));
-//        Map<String, Long> counts = new HashMap<>();
-//        for (Map.Entry<ClassPair, String> mapEntry:currentPredictions.entrySet()) {
-//            String entry = mapEntry.getValue();
-//            if (counts.containsKey(entry)) {
-//                counts.put(entry, counts.get(entry)+1L);
-//            } else {
-//                counts.put(entry, 1L);
-//            }
-//        }
 
         Set<String> maxEntries = new HashSet<>();
         long maxCount = 0;
