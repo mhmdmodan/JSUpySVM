@@ -25,12 +25,18 @@ public class ClassPair {
 
         ClassPair classPair = (ClassPair) o;
 
-        if (!x.equals(classPair.x)) return false;
-        return y.equals(classPair.y);
+        if (x.equals(classPair.x) && y.equals(classPair.y)) return true;
+        if (x.equals(classPair.y) && y.equals(classPair.x)) return true;
+        return false;
     }
 
     @Override
     public int hashCode() {
         return x.hashCode() + y.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "{" + x + ", " + y + "}";
     }
 }

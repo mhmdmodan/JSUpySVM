@@ -28,8 +28,8 @@ public class MasterPredictor {
         return runOffVoting(predictionMap);
     }
 
-    private String runOffVoting(Map<ClassPair, String> predictionMap) {
-        Map<ClassPair, String> currentPredictions = predictionMap;
+    public static String runOffVoting(Map<ClassPair, String> predictionMap) {
+        Map<ClassPair, String> currentPredictions = new HashMap<>(predictionMap);
         Set<String> winners = getMode(currentPredictions);
         int its = 0;
         while (winners.size() != 1) {
@@ -52,18 +52,28 @@ public class MasterPredictor {
         return winners.toArray(new String[winners.size()])[0];
     }
 
-    private Set<String> getMode(Map<ClassPair, String> currentPredictions) {
+    private static Set<String> getMode(Map<ClassPair, String> currentPredictions) {
         Map<String, Long> counts = currentPredictions.entrySet()
                 .stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.groupingBy(Function.identity(),
                         Collectors.counting()));
+//        Map<String, Long> counts = new HashMap<>();
+//        for (Map.Entry<ClassPair, String> mapEntry:currentPredictions.entrySet()) {
+//            String entry = mapEntry.getValue();
+//            if (counts.containsKey(entry)) {
+//                counts.put(entry, counts.get(entry)+1L);
+//            } else {
+//                counts.put(entry, 1L);
+//            }
+//        }
 
         Set<String> maxEntries = new HashSet<>();
         long maxCount = 0;
         for (Map.Entry<String, Long> entry : counts.entrySet()) {
             if (maxEntries.isEmpty() || entry.getValue() == maxCount) {
                 maxEntries.add(entry.getKey());
+                maxCount = entry.getValue();
             } else if (entry.getValue() > maxCount) {
                 maxEntries.clear();
                 maxEntries.add(entry.getKey());
