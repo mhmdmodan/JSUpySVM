@@ -5,19 +5,18 @@ import Exceptions.NonSepException;
 import Holders.HyperParam;
 import Sum.I;
 import Sum.IJ;
+import Sum.Kernel;
 import Vectors.MF;
 import Vectors.Vector;
-
-import java.util.Arrays;
-
-import static Vectors.MF.kern;
 
 public class TwoHull {
     private SingleHull neg;
     private SingleHull pos;
     private int numLoops;
+    private String negLabel;
+    private String posLabel;
 
-    HyperParam params;
+    private HyperParam params;
 
     public TwoHull(Vector[] negVec,
                    Vector[] posVec,
@@ -25,52 +24,17 @@ public class TwoHull {
                    String posLabel,
                    HyperParam params) {
         this.params = params;
+        this.negLabel = negLabel;
+        this.posLabel = posLabel;
 
         neg = new SingleHull(negVec, params.getMu(), negLabel, -1);
         pos = new SingleHull(posVec, params.getMu(), posLabel, 1);
     }
 
-    /**
-     * Given an array of vectors and array of classes,
-     * places vectors in appropriate positive and
-     * negative arrays, and creates new TwoClass.SingleHull
-     * objects with these vectors.
-     *
-     * @param unorderedObs unordered array of vectors
-     * @param unorderedClass corresponding array of classes
-     */
-    private void createHulls(Vector[] unorderedObs,
-                             int[] unorderedClass,
-                             String negLabel,
-                             String posLabel) {
-        if (unorderedObs.length != unorderedClass.length) {
-            throw new ArrayLengthException();
-        }
-
-        int curNeg = 0;
-        int curPos = 0;
-
-        Vector[] negVec = new Vector[unorderedObs.length];
-        Vector[] posVec = new Vector[unorderedObs.length];
-
-        for (int i=0; i<unorderedObs.length; i++) {
-            if (unorderedClass[i] <0) {
-                negVec[curNeg] = unorderedObs[i];
-                curNeg++;
-            } else {
-                posVec[curPos] = unorderedObs[i];
-                curPos++;
-            }
-        }
-
-        negVec = Arrays.copyOf(negVec, curNeg);
-        posVec = Arrays.copyOf(posVec, curPos);
-
-        neg = new SingleHull(negVec, params.getMu(), negLabel,-1);
-        pos = new SingleHull(posVec, params.getMu(), posLabel,1);
-    }
-
     //<editor-fold desc="Getters/Setters">
+    public HyperParam getParams() {
+        return params;
+    }
 
     public SingleHull getNeg() {
         return neg;
@@ -142,13 +106,13 @@ public class TwoHull {
 
     //</editor-fold>
 
-    private void buildCache() {
+    private void buildCache(Kernel kf) {
         double curSum = 0;
         for (int i = 0; i< allLength(); i++) {
             curSum = 0;
             for (int k=0; k<allLength(); k++) {
                 curSum += allPWt(k) * getWhichClass(k) *
-                        kern(allGet(k), allGet(i));
+                        kf.kern(allGet(k), allGet(i));
             }
             setCache(i, curSum);
         }
@@ -175,25 +139,27 @@ public class TwoHull {
                 Math.min(getWhichClass(i), 0) * allVWt(i)) * allCache(i);
 
         I fun3 = (int i) -> allPWt(i) * getWhichClass(i) * allCache(i);
+
+        Kernel kf = params.getKf();
         //</editor-fold>
 
         //<editor-fold desc="Positive case">
         I posNumer = (int i) -> (pos.PWt(i) - pos.VWt(i)) * pos.cache(i);
 
         IJ posDenom = (int i, int j) -> (pos.PWt(i) - pos.VWt(i)) *
-                (pos.PWt(j) - pos.VWt(j)) * kern(pos.get(i), pos.get(j));
+                (pos.PWt(j) - pos.VWt(j)) * kf.kern(pos.get(i), pos.get(j));
         //</editor-fold>
 
         //<editor-fold desc="Negative case">
         I negNumer = (int i) -> (neg.PWt(i) - neg.VWt(i)) * neg.cache(i);
 
         IJ negDenom = (int i, int j) -> (neg.PWt(i) - neg.VWt(i)) *
-                (neg.PWt(j) - neg.VWt(j)) * kern(neg.get(i), neg.get(j));
+                (neg.PWt(j) - neg.VWt(j)) * kf.kern(neg.get(i), neg.get(j));
         //</editor-fold>
         numLoops = 0;
         while (true) {
             numLoops++;
-            buildCache();
+            buildCache(kf);
 
             pos.setVWt(pos.findVertex(null, false));
             neg.setVWt(neg.findVertex(null, false));
@@ -204,6 +170,18 @@ public class TwoHull {
 
             if (Math.sqrt(w0w) < params.getNonSep()) {
                 throw new NonSepException();
+            }
+            if (numLoops > params.getMaxIts()) {
+                System.out.println("MAXIMUM ITERATIONS REACHED: " +
+                        params.getMaxIts());
+                System.out.println("Training: " + negLabel +
+                " vs. " + posLabel);
+                System.out.println("1 - w.(Vpos-pNeg)/w.w: " +
+                        (1 - w0vPos_pNeg / w0w));
+                System.out.println("1 - w.(Ppos-Vneg)/w.w: " +
+                        (1 - w0pPos_vNeg / w0w));
+                System.out.println("Epsilon: " + params.getEp());
+                break;
             }
 
             if (w0pPos_vNeg > w0vPos_pNeg) {

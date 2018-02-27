@@ -2,10 +2,10 @@ package TwoClass;
 
 import Sum.I;
 import Sum.IJ;
+import Sum.Kernel;
 import Vectors.Vector;
 
 import static Vectors.MF.dSumm;
-import static Vectors.MF.kern;
 import static Vectors.MF.summ;
 
 public class Predictor {
@@ -20,9 +20,12 @@ public class Predictor {
     private String negLabel;
     private String posLabel;
 
+    private Kernel kf;
+
     public Predictor(TwoHull parent) {
         this.negLabel = parent.getNeg().getLabel();
         this.posLabel = parent.getPos().getLabel();
+        this.kf = parent.getParams().getKf();
 
         this.length = parent.allLength();
         this.allPWt = createPWt(parent);
@@ -82,12 +85,12 @@ public class Predictor {
 
     private double calcBisect() {
         IJ calcB = (int i, int j) -> allPWt[i] * whichClass[i] * allPWt[j] *
-                kern(allPts[i], allPts[j]);
+                kf.kern(allPts[i], allPts[j]);
         return 0.5*dSumm(calcB, length, length);
     }
 
     public String predict(Vector inVec) {
-        I wCalc = (int i) -> allPWt[i]*whichClass[i]*kern(allPts[i],inVec);
+        I wCalc = (int i) -> allPWt[i]*whichClass[i]*kf.kern(allPts[i],inVec);
         double wVal = summ(wCalc, length);
 
         return wVal - bisect > 0 ? posLabel : negLabel;

@@ -57,11 +57,13 @@ public class WSVM {
     }
 
     public MasterPredictor train() {
+        params.createLambdas();
         try {
             findMu();
             Set<ClassPair> pairs = ClassPair.pairUp(vectorsMap.keySet());
-            pairs
-                    .parallelStream()
+            new ArrayList<>(pairs)
+                    .stream()
+                    .parallel()
                     .forEach(this::trainPair);
         } catch (Exception ex) {
             ex.printStackTrace(new PrintStream(System.out));
@@ -70,6 +72,10 @@ public class WSVM {
     }
 
     private void trainPair(ClassPair pair) {
+//        try {
+//            System.out.println("id - " + Thread.currentThread().getName());
+//        } catch (Exception e) {
+//        }
         if (!predictorMap.containsKey(pair)) {
             List<Vector> aVec = vectorsMap.get(pair.getX());
             List<Vector> bVec = vectorsMap.get(pair.getY());
@@ -123,6 +129,8 @@ public class WSVM {
         long before = System.currentTimeMillis();
         WSVM test = new WSVM(pts, 2, classes);
         test.getParams().setMu(1);
+        test.getParams().setKernel("monomial");
+        test.getParams().setQ(2);
         MasterPredictor testPred = test.train();
         long after = System.currentTimeMillis();
         System.out.println((after-before));
