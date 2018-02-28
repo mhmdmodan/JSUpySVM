@@ -1,18 +1,4 @@
-#' Hello world function
-#'
-#' This says hello world
-#' @return hello world string
-#' @export
-#'
-#' @examples
-#' helloJavaWorld()
-helloJavaWorld <- function() {
-    hjw <- .jnew("Test")
-    out <- .jcall(hjw, "[D", "giveDoub")
-    return(out)
-}
-
-train <- function(df, kernel = "linear",
+WSVM <- function(df, kernel = "linear",
                   mu = NA,
                   q = 2.0,
                   gamma = 0.01,
