@@ -39,7 +39,7 @@ public class SingleHull {
             newS[i] = get(i).getS()/totalS;
         }
         IV fun = (int i) -> get(i).mult(newS[i]);
-        return MF.summ(fun, dim, dim);
+        return MF.summ(fun, length, dim);
     }
 
     private int getMaxIndex(Vector n, double[] a) {

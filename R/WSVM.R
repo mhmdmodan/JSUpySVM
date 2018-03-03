@@ -12,7 +12,6 @@ WSVM <- function(df, kernel = "linear",
 
     # Shuffle the values
     nums <- c(do.call(rbind, df[, -1]))
-
     wsvm <- J("WSVM")
     svm <- new(wsvm, nums, dim, whichClass)
     params <- .jcall(svm, "LHolders/HyperParam;", "getParams")
