@@ -1,6 +1,6 @@
 # JSUpySVM
 
-This is a multithreaded, multiclass implementation of a weighted, reduced convex hull-based support vector machine algorithm based on [this paper](http://ieeexplore.ieee.org/document/6119691/). I have written the algorithm in Java, and that is mostly complete. Currently, I am working on developing the package with rJava. Uncommented demos can be found at [this repo](https://github.com/mhmdmodan/svmTests). My presentation can be found at [my website](https://mhmdmodan.com).
+This is a multithreaded, multiclass implementation of a weighted, reduced convex hull-based support vector machine algorithm based on [this paper](http://ieeexplore.ieee.org/document/6119691/). I have written the algorithm in Java, and that is mostly complete. Currently, I am working on developing the package with rJava. Uncommented demos can be found at [this repo](https://github.com/mhmdmodan/svmTests), which include a live OCR demo. My presentation can be found at [my website](https://mhmdmodan.com).
 
 As of now, the algorithm can be accessed by calling:
 
