@@ -1,6 +1,6 @@
 # JSUpySVM
 
-This is a multithreaded, multiclass implementation of a weighted, reduced convex hull-based support vector machine algorithm based on [this paper](http://ieeexplore.ieee.org/document/6119691/). I have written the algorithm in Java, and that is mostly complete. Currently, I am working on developing the package with rJava. Uncommented demos can be found at [this repo](https://github.com/mhmdmodan/svmTests), which include a live OCR demo. My presentation can be found at [my website](https://mhmdmodan.com).
+This is a multithreaded, multiclass implementation of a weighted, reduced convex hull-based support vector machine algorithm based on [this paper by Goodrich et al](http://ieeexplore.ieee.org/document/6119691/). I have written the algorithm in Java, and that is mostly complete. Currently, I am working on developing the package with rJava. Uncommented demos can be found at [this repo](https://github.com/mhmdmodan/svmTests), which include a live OCR demo. My presentation can be found at [my website](https://mhmdmodan.com).
 
 As of now, the algorithm can be accessed by calling:
 
@@ -14,7 +14,7 @@ WSVM(df, kernel = "linear",
                   non_sep = 1e-5)
 ```
 
-Where `df` is a dataframe with classes as the first column, and features as the rest. `kernel` has optiosn of `"linear"`, `"rbf"`, `"monomial"`, and `"polynomial"`. `mu` is calculated by default as $\frac{1}{0.9\kappa}$ where $\kappa$ equals the sum of all weights in the smallest by weight class. Unfortunately it is not possible to assign weights yet (although the implementation in Java supports it).
+Where `df` is a dataframe with classes as the first column, and features as the rest. `kernel` has optiosn of `"linear"`, `"rbf"`, `"monomial"`, and `"polynomial"`. `mu` is calculated by default when the value is `NA` as $\frac{1}{0.9\kappa}$ where $\kappa$ equals the sum of all weights in the smallest by weight class. Unfortunately it is not possible to assign weights yet (although the implementation in Java supports it).
 
 `q` is the exponent of the monnomial/polynomial kernel, `gamma` is for the `rbf` kernel. `ep` is $\epsilon$. `max_its` is the maximum iterations. `non_sep` is the threshold of deciding if hulls are nonseparable.
 
