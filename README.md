@@ -25,3 +25,12 @@ out$predict(vector)
 ```
 
 Where `out` is the Java object returned from the `WSVM` function and `vector` is a feature vector with features in the same order as `df`.
+
+## Installation
+
+```r
+require(devtools)
+install_github(“mhmdmodan/JSUpySVM”)
+```
+
+If issues arise with Java/R architecture mismatch, clone the repo and install it using the build tab in RStudio.
