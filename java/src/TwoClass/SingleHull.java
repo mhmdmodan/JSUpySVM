@@ -3,6 +3,11 @@ package TwoClass;
 import Vectors.*;
 import Sum.*;
 
+/**
+ * A single class for a given SVM TwoHull. Contains all points
+ * of its class and includes methods for finding hull vertices
+ * and hull centers.
+ */
 public class SingleHull {
     private Vector[] pointList;
     private double mu;
@@ -10,12 +15,22 @@ public class SingleHull {
     private int length;
     private int whichClass;
 
+    // weights for the current p vector
     private double[] PWt;
+    // weights for the current v vector
     private double[] VWt;
+    // weights for the f cache
     private double[] cache;
 
     private String label;
 
+    /**
+     * Initialize the single class object
+     * @param pointList an array of vectors corresponding to training points for the class
+     * @param mu reduction factor
+     * @param label label for this SingleHull's class
+     * @param whichClass positive or negative class?
+     */
     public SingleHull(Vector[] pointList, double mu, String label, int whichClass) {
         this.label = label;
         this.mu = mu;
@@ -29,6 +44,10 @@ public class SingleHull {
         this.VWt = new double[length];
     }
 
+    /**
+     * Find the weighted center of this class
+     * @return weighted center as a vector object
+     */
     public Vector getCenter() {
         double totalS = 0;
         for (Vector vec:pointList) {
@@ -42,6 +61,13 @@ public class SingleHull {
         return MF.summ(fun, length, dim);
     }
 
+    /**
+     * Find the index of the max vector dot product in some direction n.
+     * This is for the initial point finding so no kernel products
+     * @param n direction to find a point in
+     * @param a convex hull weights
+     * @return index of the maximum dot product vertex
+     */
     private int getMaxIndex(Vector n, double[] a) {
         int maxInd = -1;
         double maxVal = -Double.MAX_VALUE;
@@ -57,6 +83,12 @@ public class SingleHull {
         return maxInd;
     }
 
+    /**
+     * Find the index of the vector with the max dot product in the
+     * direction of -w.
+     * @param a convex hull weights
+     * @return index of the maximum dot product vertex
+     */
     private int getMaxIndex(double[] a) {
         int maxInd = -1;
         double maxVal = -Double.MAX_VALUE;
@@ -72,6 +104,16 @@ public class SingleHull {
         return maxInd;
     }
 
+    /**
+     * Method to find a point on the convex hull of SingleHull
+     * @param n vector for which direction to look in. Can be null when
+     *          init is true.
+     * @param init boolean if this is finding the initial vector or not.
+     *             Determines if we'll use the f cache or not, ie the vector n
+     *             would be -w.
+     * @return an array of doubles corresponding to convex hull weights. These
+     * are a in the equation of a convex hull.
+     */
     public double[] findVertex(Vector n, boolean init) {
         double[] a = new double[length];
         double total = 0;

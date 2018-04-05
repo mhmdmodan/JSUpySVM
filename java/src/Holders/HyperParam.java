@@ -3,6 +3,9 @@ package Holders;
 import Sum.Kernel;
 import Vectors.Vector;
 
+/**
+ * A class holding several parameters for the SVM
+ */
 public class HyperParam {
     public static final double epDef = 1e-2;
     public static final double nonSepDef = 1e-5;
@@ -19,6 +22,9 @@ public class HyperParam {
     private String kernel;
     private Kernel kf;
 
+    /**
+     * Initialize the HyperParam with some values
+     */
     public HyperParam() {
         this.ep = epDef;
         this.nonSep = nonSepDef;
@@ -72,6 +78,10 @@ public class HyperParam {
         this.kernel = kernel;
     }
 
+    /**
+     * Create the lambdas to be used for kernel products.
+     * This allows a user to choose a kernel for calculations
+     */
     public void createLambdas() {
         switch (kernel) {
             case("polynomial"):

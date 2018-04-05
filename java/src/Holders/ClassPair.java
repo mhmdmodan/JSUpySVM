@@ -3,6 +3,9 @@ package Holders;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A class holding two strings. Order doesn't matter.
+ */
 public class ClassPair {
 
     private String x;
@@ -13,6 +16,12 @@ public class ClassPair {
         this.y = y;
     }
 
+    /**
+     * A static function which takes a set of strings
+     * and pairs them up in in ever combo into a set of ClassPairs
+     * @param labels labels to pair up
+     * @return a set of ClassPairs
+     */
     public static Set<ClassPair> pairUp(Set<String> labels) {
         Set<ClassPair> set = new HashSet<>();
         for (String str1:labels) {

@@ -8,6 +8,10 @@ import Vectors.Vector;
 import static Vectors.MF.dSumm;
 import static Vectors.MF.summ;
 
+/**
+ * A predictor object for a specific class pair. Takes an input Vector as new
+ * data and outputs the correct class pair
+ */
 public class Predictor {
 
     private double[] allPWt;
@@ -22,6 +26,11 @@ public class Predictor {
 
     private Kernel kf;
 
+    /**
+     * Initialize the Predictor from the TwoHull SVM that
+     * was trained
+     * @param parent trained SVM
+     */
     public Predictor(TwoHull parent) {
         this.negLabel = parent.getNeg().getLabel();
         this.posLabel = parent.getPos().getLabel();
@@ -83,12 +92,21 @@ public class Predictor {
         return allPts;
     }
 
+    /**
+     * Calculate b
+     * @return a value for b
+     */
     private double calcBisect() {
         IJ calcB = (int i, int j) -> allPWt[i] * whichClass[i] * allPWt[j] *
                 kf.kern(allPts[i], allPts[j]);
         return 0.5*dSumm(calcB, length, length);
     }
 
+    /**
+     * Takes a new Vector in the feature space and predicts a class
+     * @param inVec new data point
+     * @return class prediction
+     */
     public String predict(Vector inVec) {
         I wCalc = (int i) -> allPWt[i]*whichClass[i]*kf.kern(allPts[i],inVec);
         double wVal = summ(wCalc, length);
