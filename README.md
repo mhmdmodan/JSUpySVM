@@ -30,7 +30,7 @@ Where `out` is the Java object returned from the `WSVM` function and `vector` is
 
 ```r
 require(devtools)
-install_github(“mhmdmodan/JSUpySVM”)
+install_github(“mhmdmodan/JSUpySVM”, args="--no-multiarch")
 ```
 
 If issues arise with Java/R architecture mismatch, clone the repo and install it using the build tab in RStudio.
